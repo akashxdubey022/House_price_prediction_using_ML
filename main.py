@@ -12,7 +12,8 @@ scaler = pickle.load(open('scaler.pkl','rb'))
 def home():
     return render_template('home.html')
 
-@app.route('/predict',methods =['POST'])
+#   Creating api to check  our application runnng or not 
+@app.route('/predict_api',methods =['POST'])
 def predict_api():
     data=request.json['data']
     print(data)
@@ -23,9 +24,23 @@ def predict_api():
     output = model.predict(new_data)
 
     print(output[0])
-    
+
     return jsonify(output[0])
-    
+
+# Creating web page to show our predicted value :
+@app.route('/predict', methods = ["POST"])
+def predict():
+    data=[float(x) for x in request.form.values()]
+    final_input = scaler.transform(np.array(data).reshape(1,-1))
+    print(final_input)
+    output = model.predict(final_input)[0]
+    print(output)
+    return render_template("home.html",prediction_text="The House price prediction is {}".format(output))
+
 
 if __name__ == "__main__":
     app.run(debug =True)
+
+
+
+
